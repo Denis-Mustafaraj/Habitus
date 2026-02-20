@@ -15,6 +15,7 @@ export default function TabsLayout() {
 
         tabBarStyle: {
           backgroundColor: "#25292e",
+          borderTopColor: "#25292e",
         },
       }}
     >
@@ -41,6 +42,20 @@ export default function TabsLayout() {
               name={
                 focused ? "information-circle" : "information-circle-outline"
               }
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="habits"
+        options={{
+          headerTitle: "Habits",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "checkmark-done" : "checkmark-done-outline"}
               size={24}
               color={color}
             />
