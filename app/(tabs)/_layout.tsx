@@ -62,6 +62,20 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="sleep"
+        options={{
+          headerTitle: "Sleep",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "moon" : "moon-outline"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
