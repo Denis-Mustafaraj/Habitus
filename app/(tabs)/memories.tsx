@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function AboutScreen() {
+export default function Memories() {
   return (
     <View style={styles.container}>
-      <Text style={styles.textStyle}>About Habitus</Text>
+      <Text style={styles.textStyle}>Memories</Text>
     </View>
   );
 }
@@ -17,5 +17,6 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: "#fff",
+    fontSize: 20,
   },
 });

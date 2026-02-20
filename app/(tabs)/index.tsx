@@ -1,26 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.textStyle}>Hello, Habitus!</Text>
-    </View>
-  );
+  return <Redirect href="/(tabs)/memories" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#25292F",
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-  },
-  textStyle: {
-    color: "#fff",
-  },
-  button: {
-    fontSize: 20,
-    textDecorationLine: "underline",
-    color: "#fff",
-  },
-});
