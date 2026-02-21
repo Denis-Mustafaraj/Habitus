@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 20,
+    marginBlock: 35,
   },
   headerRow: {
     flexDirection: "row",

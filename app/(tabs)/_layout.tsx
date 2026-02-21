@@ -30,7 +30,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="memories"
         options={{
-          headerTitle: "Memories",
+          headerShown: false,
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "journal" : "journal-outline"}
@@ -44,7 +44,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="habits"
         options={{
-          headerTitle: "Habits",
+          headerShown: false,
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "checkmark-done" : "checkmark-done-outline"}
@@ -58,7 +58,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="sleep"
         options={{
-          headerTitle: "Sleep",
+          headerShown: false,
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "moon" : "moon-outline"}
@@ -72,7 +72,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          headerTitle: "Profile",
+          headerShown: false,
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}
