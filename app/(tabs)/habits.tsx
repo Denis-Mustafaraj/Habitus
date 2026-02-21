@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 export default function Habits() {
@@ -19,6 +19,7 @@ export default function Habits() {
   const [checks, setChecks] = useState<Record<number, Record<number, boolean>>>(
     {},
   );
+  const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const now = new Date();
@@ -80,6 +81,44 @@ export default function Habits() {
     setEditingIndex(null);
   };
 
+  const deleteHabit = () => {
+    if (deletingIndex === null) return;
+
+    const indexToDelete = deletingIndex;
+    // Remove habit from habits array
+    setHabits((prev) => prev.filter((_, index) => index !== indexToDelete));
+
+    // Update checks: remove checks for deleted habit and shift indices
+    setChecks((prev) => {
+      const newChecks: typeof prev = {};
+      for (const day in prev) {
+        const dayMap = prev[day];
+        const newDayMap: Record<number, boolean> = {};
+        for (const habitIndex in dayMap) {
+          const idx = parseInt(habitIndex);
+          if (idx < indexToDelete) {
+            // Habit to the left, keep as is
+            newDayMap[idx] = dayMap[idx];
+          } else if (idx > indexToDelete) {
+            // Habit to the right, shift left by one
+            newDayMap[idx - 1] = dayMap[idx];
+          }
+          // If idx === indexToDelete, skip (delete this habit's checks)
+        }
+        if (Object.keys(newDayMap).length > 0) {
+          newChecks[day] = newDayMap;
+        }
+      }
+      return newChecks;
+    });
+
+    setDeletingIndex(null);
+  };
+
+  const closeDeletingModal = () => {
+    setDeletingIndex(null);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.monthTitle}>{currentMonth}</Text>
@@ -92,6 +131,7 @@ export default function Habits() {
                 key={`${habit}-${index}`}
                 style={styles.habitHeaderCell}
                 onPress={() => openEditHabit(index)}
+                onLongPress={() => setDeletingIndex(index)}
               >
                 <Text style={styles.habitHeaderText}>{habit}</Text>
               </Pressable>
@@ -160,6 +200,41 @@ export default function Habits() {
                   ]}
                 >
                   {editingIndex === null ? "Add" : "Save"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent
+        animationType="fade"
+        visible={deletingIndex !== null}
+        onRequestClose={closeDeletingModal}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Delete Habit?</Text>
+            <Text style={styles.deleteWarningText}>
+              Are you sure you want to delete "
+              {deletingIndex !== null ? habits[deletingIndex] : ""}" and all its
+              progress?
+            </Text>
+            <View style={styles.modalActions}>
+              <Pressable
+                style={styles.modalButton}
+                onPress={closeDeletingModal}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.modalButton, styles.modalButtonDanger]}
+                onPress={deleteHabit}
+              >
+                <Text
+                  style={[styles.modalButtonText, styles.modalButtonDangerText]}
+                >
+                  Delete
                 </Text>
               </Pressable>
             </View>
@@ -304,5 +379,18 @@ const styles = StyleSheet.create({
   },
   modalButtonPrimaryText: {
     color: "#25292F",
+  },
+  deleteWarningText: {
+    color: "#ccc",
+    fontSize: 14,
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  modalButtonDanger: {
+    backgroundColor: "#e74c3c",
+    borderColor: "#e74c3c",
+  },
+  modalButtonDangerText: {
+    color: "#fff",
   },
 });
