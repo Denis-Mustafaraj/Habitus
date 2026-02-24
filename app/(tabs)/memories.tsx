@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useMemory } from "../MemoryContext";
 
 export default function Memories() {
-  const [memories, setMemories] = useState<{ [key: number]: string }>({});
   const [currentMonth, setCurrentMonth] = useState("");
   const [daysInMonth, setDaysInMonth] = useState(0);
   const [favoriteDay, setFavoriteDay] = useState<number | null>(null);
+  const { monthsData, setMonthMemories, setFavoriteDay: setContextFavoriteDay } = useMemory();
 
   useEffect(() => {
     const now = new Date();
@@ -20,46 +21,63 @@ export default function Memories() {
     const year = now.getFullYear();
     const days = new Date(year, now.getMonth() + 1, 0).getDate();
 
-    setCurrentMonth(`${month} ${year}`);
+    setCurrentMonth(month);
     setDaysInMonth(days);
-  }, []);
+
+    // Load favorite day for current month from context
+    const monthKey = `${month} ${year}`;
+    if (monthsData[monthKey]) {
+      setFavoriteDay(monthsData[monthKey].favoriteDay);
+    }
+  }, [monthsData]);
 
   const handleMemoryChange = (day: number, text: string) => {
-    setMemories((prev) => ({ ...prev, [day]: text }));
+    const year = new Date().getFullYear();
+    const monthKey = `${currentMonth} ${year}`;
+    setMonthMemories(monthKey, day, text);
   };
 
   const handleFavoriteDay = (day: number) => {
-    setFavoriteDay(favoriteDay === day ? null : day);
+    const year = new Date().getFullYear();
+    const monthKey = `${currentMonth} ${year}`;
+    const newFavoriteDay = favoriteDay === day ? null : day;
+    setFavoriteDay(newFavoriteDay);
+    setContextFavoriteDay(monthKey, newFavoriteDay);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.monthTitle}>{currentMonth}</Text>
+      <Text style={styles.monthTitle}>{currentMonth} {new Date().getFullYear()}</Text>
       <ScrollView style={styles.scrollView}>
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
-          <View
-            key={day}
-            style={[styles.dayRow, favoriteDay === day && styles.favoritedDay]}
-          >
-            <Text style={styles.dayNumber}>{day}</Text>
-            <TextInput
-              style={styles.memoryInput}
-              placeholder="Write your memory..."
-              placeholderTextColor="#666"
-              value={memories[day] || ""}
-              onChangeText={(text) => handleMemoryChange(day, text)}
-              multiline
-            />
-            <TouchableOpacity
-              style={styles.favoriteButton}
-              onPress={() => handleFavoriteDay(day)}
+        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
+          const year = new Date().getFullYear();
+          const monthKey = `${currentMonth} ${year}`;
+          const memoryText = monthsData[monthKey]?.memories[day] || "";
+          return (
+            <View
+              key={day}
+              style={[styles.dayRow, favoriteDay === day && styles.favoritedDay]}
             >
-              <Text style={styles.favoriteIcon}>
-                {favoriteDay === day ? "★" : "☆"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+              <Text style={styles.dayNumber}>{day}</Text>
+              <TextInput
+                style={styles.memoryInput}
+                placeholder="Write your memory..."
+                placeholderTextColor="#666"
+                value={memoryText}
+                onChangeText={(text) => handleMemoryChange(day, text)}
+                multiline
+              />
+              <TouchableOpacity
+                style={styles.favoriteButton}
+                onPress={() => handleFavoriteDay(day)}
+              >
+                <Text style={styles.favoriteIcon}>
+                  {favoriteDay === day ? "★" : "☆"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        })}
       </ScrollView>
     </View>
   );
