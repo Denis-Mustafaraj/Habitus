@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function Memories() {
   const [memories, setMemories] = useState<{ [key: number]: string }>({});
   const [currentMonth, setCurrentMonth] = useState("");
   const [daysInMonth, setDaysInMonth] = useState(0);
+  const [favoriteDay, setFavoriteDay] = useState<number | null>(null);
 
   useEffect(() => {
     const now = new Date();
@@ -20,12 +28,19 @@ export default function Memories() {
     setMemories((prev) => ({ ...prev, [day]: text }));
   };
 
+  const handleFavoriteDay = (day: number) => {
+    setFavoriteDay(favoriteDay === day ? null : day);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.monthTitle}>{currentMonth}</Text>
       <ScrollView style={styles.scrollView}>
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
-          <View key={day} style={styles.dayRow}>
+          <View
+            key={day}
+            style={[styles.dayRow, favoriteDay === day && styles.favoritedDay]}
+          >
             <Text style={styles.dayNumber}>{day}</Text>
             <TextInput
               style={styles.memoryInput}
@@ -35,6 +50,14 @@ export default function Memories() {
               onChangeText={(text) => handleMemoryChange(day, text)}
               multiline
             />
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={() => handleFavoriteDay(day)}
+            >
+              <Text style={styles.favoriteIcon}>
+                {favoriteDay === day ? "★" : "☆"}
+              </Text>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
@@ -80,5 +103,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingHorizontal: 10,
     minHeight: 30,
+  },
+  favoriteButton: {
+    padding: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  favoriteIcon: {
+    fontSize: 24,
+    color: "#ffd33d",
+  },
+  favoritedDay: {
+    backgroundColor: "rgba(255, 211, 61, 0.1)",
+    borderBottomColor: "#ffd33d",
   },
 });
